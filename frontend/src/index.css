@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Patrick+Hand&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* 폰트 — font-kalam, font-caveat 유틸리티 */
+  --font-kalam: 'Kalam', cursive;
+  --font-caveat: 'Caveat', cursive;
+
+  /* 스케치 컬러 토큰 */
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #4a4a4a;
+  --color-ink-faint: #8a8a8a;
+  --color-paper: #fdfcf8;
+  --color-bg: #f0eee9;
+
+  /* accent — JS에서 동적 변경됨 */
+  --color-accent: #FF6B4A;
+  --color-accent-soft: rgb(255, 228, 220);
+
+  /* 스케치 손그림 그림자 */
+  --shadow-sketch: 1.5px 2px 0 rgba(0, 0, 0, 0.12);
+  --shadow-sketch-md: 2.5px 3px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sketch-lg: 4px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  font-family: var(--font-kalam);
+  color: var(--color-ink);
+}
+
+input {
+  font-family: var(--font-kalam);
+}
+
+/* 기본 input 리셋 */
+input[type="text"], input[type="tel"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--color-ink);
+  width: 100%;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
