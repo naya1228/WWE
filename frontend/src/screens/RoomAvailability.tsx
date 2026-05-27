@@ -2,7 +2,7 @@ import { createSignal, createResource, createEffect, For, Show } from 'solid-js'
 import Screen from '../components/Screen';
 import Button from '../components/Button';
 import Calendar from '../components/Calendar';
-import { setScreen, currentRoomId, userId, userToken, cachedRoom, cachedMySlots, setCachedMySlots } from '../store';
+import { setScreen, currentRoomId, userId, userToken, cachedRoom, cachedMySlots, setCachedMySlots, isAccentDark } from '../store';
 import { api, type Slot } from '../api';
 
 const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
@@ -185,7 +185,7 @@ export default function RoomAvailability() {
           <div class="flex items-center justify-between shrink-0">
             <p class="text-xs text-ink-soft">가능한 시간을 탭하세요</p>
             <Show when={checkedCount() > 0}>
-              <span class="text-[10px] px-2 py-0.5 bg-accent rounded font-bold">
+              <span class={`text-[10px] px-2 py-0.5 bg-accent rounded font-bold ${isAccentDark() ? 'text-white' : 'text-ink'}`}>
                 {checkedCount()}시간 선택
               </span>
             </Show>

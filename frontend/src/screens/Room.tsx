@@ -2,7 +2,7 @@ import { For, Show, createResource, createEffect, createSignal } from 'solid-js'
 import Screen from '../components/Screen';
 import Card from '../components/Card';
 import Calendar from '../components/Calendar';
-import { setScreen, currentRoomId, userId, userToken, setCachedRoom, setCachedMySlots, cachedRoom, cachedMySlots, invalidateSlotsCache, setMyRooms, myRooms } from '../store';
+import { setScreen, currentRoomId, userId, userToken, setCachedRoom, setCachedMySlots, cachedRoom, cachedMySlots, invalidateSlotsCache, setMyRooms, myRooms, isAccentDark } from '../store';
 import { api } from '../api';
 
 function formatHour(h: number) {
@@ -285,7 +285,7 @@ export default function Room() {
           </button>
           <button
             onClick={() => setScreen('room-availability')}
-            class="text-sm font-bold cursor-pointer bg-accent text-ink border-2 border-ink rounded-xl px-4 py-2 shadow-sketch"
+            class={`text-sm font-bold cursor-pointer bg-accent border-2 border-ink rounded-xl px-4 py-2 shadow-sketch ${isAccentDark() ? 'text-white' : 'text-ink'}`}
           >
             📅 내 시간 설정
           </button>

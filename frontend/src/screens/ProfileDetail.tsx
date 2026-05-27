@@ -2,7 +2,7 @@
 import { For } from 'solid-js';
 import Screen from '../components/Screen';
 import Button from '../components/Button';
-import { availableTimes, toggleTime } from '../store';
+import { availableTimes, toggleTime, isAccentDark } from '../store';
 
 const HOUR_SLOTS = [
   '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', '12:00 - 13:00',
@@ -33,7 +33,7 @@ export default function ProfileDetail(props: Props) {
             ← 캘린더로 돌아가기
           </button>
           {checkedCount() > 0 && (
-            <span class="text-[10px] px-2 py-0.5 bg-accent rounded font-bold">
+            <span class={`text-[10px] px-2 py-0.5 bg-accent rounded font-bold ${isAccentDark() ? 'text-white' : 'text-ink'}`}>
               {checkedCount()}시간 가능
             </span>
           )}
