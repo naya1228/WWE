@@ -1,4 +1,5 @@
 import { For } from 'solid-js';
+import { isAccentDark } from '../store';
 
 interface Props {
   month?: string;
@@ -53,8 +54,11 @@ export default function Calendar(props: Props) {
               if (mark() === 'partial') return 'bg-accent-soft';
               return 'bg-transparent';
             };
-            const textClass = () =>
-              mark() === 'unavailable' ? 'text-ink-faint' : 'text-ink';
+            const textClass = () => {
+              if (mark() === 'unavailable') return 'text-ink-faint';
+              if (mark() === 'available') return isAccentDark() ? 'text-white' : 'text-ink';
+              return 'text-ink';
+            };
             const fwClass = () =>
               isSel() || mark() === 'available' ? 'font-bold' : 'font-normal';
 
