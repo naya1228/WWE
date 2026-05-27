@@ -139,6 +139,18 @@ async def create_room(
     return room
 
 
+@router.get("/rooms/by-code/{code}", response_model=RoomOut)
+async def get_room_by_code(code: str, db: AsyncSession = Depends(get_session)) -> Room:
+    """초대 코드로 룸 조회."""
+    result = await db.execute(
+        select(Room).where(Room.invite_code == code.upper())
+    )
+    room = result.scalar_one_or_none()
+    if room is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "코드가 올바르지 않아요")
+    return room
+
+
 @router.get("/rooms/{room_id}", response_model=RoomDetail)
 async def get_room(room_id: UUID, db: AsyncSession = Depends(get_session)) -> Room:
     result = await db.execute(

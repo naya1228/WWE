@@ -1,6 +1,4 @@
-# syntax=docker/dockerfile:1.7
-
-FROM python:3.12-slim AS base
+FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -12,10 +10,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 
-# 의존성만 먼저 설치 (캐시 활용)
+# 의존성 설치 (pyproject.toml / uv.lock 기준)
 COPY pyproject.toml uv.lock* ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --no-dev || uv sync --no-install-project --no-dev
+RUN uv sync --frozen --no-install-project --no-dev || uv sync --no-install-project --no-dev
 
 # 소스 복사
 COPY app ./app

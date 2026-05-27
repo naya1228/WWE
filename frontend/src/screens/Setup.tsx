@@ -4,8 +4,7 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import Avatar from '../components/Avatar';
 import { ACCENT_COLORS } from '../constants';
-import { setScreen, saveUser, accentColor, setAccentColor } from '../store';
-import { pendingPhone } from './Onboard';
+import { setScreen, saveUser, accentColor, setAccentColor, pendingPhone } from '../store';
 import { api } from '../api';
 
 export default function Setup() {
@@ -17,10 +16,12 @@ export default function Setup() {
   async function handleStart() {
     const n = name().trim();
     if (!n) { setError('이름을 입력해줘요'); return; }
+    const phone = pendingPhone();
+    if (!phone) { setError('전화번호가 없어요. 돌아가서 다시 입력해주세요'); return; }
     setError('');
     setLoading(true);
     try {
-      const u = await api.createUser(pendingPhone, n, color());
+      const u = await api.createUser(phone, n, color());
       saveUser({ id: u.id, token: u.token, phone: u.phone, name: u.name, color: u.color });
       setScreen('landing');
     } catch (e: any) {
@@ -68,7 +69,12 @@ export default function Setup() {
         {error() && <p class="text-sm text-red-500 pl-1">{error()}</p>}
 
         <div class="mt-auto">
-          <Button variant="primary" size="lg" onClick={handleStart}>
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleStart}
+            class={loading() ? 'opacity-60 pointer-events-none' : ''}
+          >
             {loading() ? '...' : '시작하기!'}
           </Button>
         </div>

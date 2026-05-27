@@ -1,4 +1,4 @@
-import { Show, createSignal } from 'solid-js';
+
 import Screen from '../components/Screen';
 import Avatar from '../components/Avatar';
 import { setScreen, userName, userPhone, user } from '../store';

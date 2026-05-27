@@ -55,6 +55,7 @@ class RoomOut(BaseModel):
 
     id: UUID
     name: str
+    invite_code: str
     created_at: datetime
     date_range_start: date
     date_range_end: date

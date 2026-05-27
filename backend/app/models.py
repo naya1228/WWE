@@ -1,3 +1,5 @@
+import random
+import string
 from datetime import date, datetime
 from uuid import UUID, uuid4
 
@@ -17,6 +19,12 @@ from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
+
+# 헷갈리는 문자(0/O, 1/I/L) 제외한 4자리 초대 코드
+_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+
+def _gen_invite_code() -> str:
+    return ''.join(random.choices(_CODE_CHARS, k=4))
 
 
 class User(Base):
@@ -45,6 +53,9 @@ class Room(Base):
 
     id: Mapped[UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    invite_code: Mapped[str] = mapped_column(
+        String(4), unique=True, nullable=False, default=_gen_invite_code
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

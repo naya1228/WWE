@@ -24,6 +24,7 @@ export interface UserOut {
 export interface RoomOut {
   id: string;
   name: string;
+  invite_code: string;
   created_at: string;
   date_range_start: string;
   date_range_end: string;
@@ -85,7 +86,11 @@ async function req<T>(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw Object.assign(new Error(err.detail ?? '알 수 없는 오류'), { status: res.status });
+    // FastAPI 422: detail이 배열 [{loc, msg, type}]
+    const detail = Array.isArray(err.detail)
+      ? err.detail.map((e: any) => e.msg).join(', ')
+      : (err.detail ?? '알 수 없는 오류');
+    throw Object.assign(new Error(String(detail)), { status: res.status });
   }
   if (res.status === 204) return undefined as T;
   return res.json();
@@ -118,6 +123,10 @@ export const api = {
       body: { name, date_range_start: dateStart, date_range_end: dateEnd },
       token,
     }),
+
+  /** 초대 코드로 룸 조회 */
+  getRoomByCode: (code: string) =>
+    req<RoomOut>('GET', `/rooms/by-code/${code}`),
 
   /** 룸 상세 (멤버 포함) */
   getRoom: (roomId: string) =>

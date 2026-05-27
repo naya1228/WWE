@@ -2,16 +2,34 @@ import { createSignal } from 'solid-js';
 import Screen from '../components/Screen';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import { setScreen, setIsReturning, isReturning, saveUser } from '../store';
+import { setScreen, isReturning, saveUser, setPendingPhone } from '../store';
 import { api } from '../api';
 
-// 신규 흐름에서 Setup으로 전화번호 넘기는 임시 저장소
-export let pendingPhone = '';
+/** 숫자만 뽑아서 한국 전화번호 형식으로 포맷 */
+function formatPhone(raw: string): string {
+  const d = raw.replace(/\D/g, '').slice(0, 11);
+  if (d.startsWith('02')) {
+    // 서울 02-XXXX-XXXX
+    if (d.length <= 2) return d;
+    if (d.length <= 6) return `${d.slice(0, 2)}-${d.slice(2)}`;
+    if (d.length <= 9) return `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5)}`;
+    return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6, 10)}`;
+  } else {
+    // 휴대폰 010-XXXX-XXXX
+    if (d.length <= 3) return d;
+    if (d.length <= 7) return `${d.slice(0, 3)}-${d.slice(3)}`;
+    return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7, 11)}`;
+  }
+}
 
 export default function Onboard() {
   const [phone, setPhone] = createSignal('');
   const [error, setError] = createSignal('');
   const [loading, setLoading] = createSignal(false);
+
+  function handlePhoneInput(raw: string) {
+    setPhone(formatPhone(raw));
+  }
 
   async function handleReturning() {
     const p = phone().trim();
@@ -32,8 +50,8 @@ export default function Onboard() {
 
   function handleNew() {
     const p = phone().trim();
-    if (!p) return;
-    pendingPhone = p;
+    if (!p) { setError('전화번호를 입력해주세요'); return; }
+    setPendingPhone(p);
     setScreen('setup');
   }
 
@@ -64,7 +82,7 @@ export default function Onboard() {
           <Input
             label="전화번호"
             value={phone()}
-            onInput={setPhone}
+            onInput={handlePhoneInput}
             type="tel"
             placeholder="010-0000-0000"
           />
