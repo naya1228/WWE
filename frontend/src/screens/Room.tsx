@@ -88,7 +88,7 @@ export default function Room() {
   const toLocalStr = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-  // overlap 기반 캘린더 marks
+  // overlap 기반 캘린더 marks (여러 달 지원)
   const calendarProps = () => {
     const r = room();
     const ov = overlap();
@@ -96,13 +96,6 @@ export default function Room() {
 
     const start = new Date(r.date_range_start + 'T00:00');
     const end   = new Date(r.date_range_end   + 'T00:00');
-    const year  = start.getFullYear();
-    const month = start.getMonth();
-
-    const firstDay    = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const monthLabel  = `${year}년 ${month + 1}월`;
-
     const total = ov?.total_members ?? 0;
 
     // 날짜별 최대 count
@@ -111,20 +104,36 @@ export default function Room() {
       countByDate[s.date] = Math.max(countByDate[s.date] ?? 0, s.count);
     }
 
-    const marks: Record<number, 'available' | 'partial' | 'unavailable'> = {};
-    const cur = new Date(start);
-    while (cur <= end) {
-      if (cur.getMonth() === month) {
-        const d   = cur.getDate();
-        const cnt = countByDate[toLocalStr(cur)] ?? 0;
-        if (cnt === 0)       marks[d] = 'unavailable';
-        else if (cnt < total) marks[d] = 'partial';
-        else                  marks[d] = 'available';
+    // 시작월 ~ 종료월까지 순회
+    const months = [];
+    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+    const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+
+    while (cursor <= endMonth) {
+      const year  = cursor.getFullYear();
+      const month = cursor.getMonth();
+      const firstDay    = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthLabel  = `${year}년 ${month + 1}월`;
+
+      const marks: Record<number, 'available' | 'partial' | 'unavailable'> = {};
+      const cur = new Date(start);
+      while (cur <= end) {
+        if (cur.getFullYear() === year && cur.getMonth() === month) {
+          const d   = cur.getDate();
+          const cnt = countByDate[toLocalStr(cur)] ?? 0;
+          if (cnt === 0)        marks[d] = 'unavailable';
+          else if (cnt < total) marks[d] = 'partial';
+          else                  marks[d] = 'available';
+        }
+        cur.setDate(cur.getDate() + 1);
       }
-      cur.setDate(cur.getDate() + 1);
+
+      months.push({ firstDay, daysInMonth, marks, monthLabel });
+      cursor.setMonth(cursor.getMonth() + 1);
     }
 
-    return { firstDay, daysInMonth, marks, monthLabel };
+    return months;
   };
 
   return (
@@ -223,15 +232,19 @@ export default function Room() {
 
           {/* 가능 날짜 캘린더 */}
           <Show when={calendarProps()}>
-            {(cp) => (
+            {(months) => (
               <>
                 <h2 class="font-caveat text-lg font-bold mt-2">📅 가능한 날짜</h2>
-                <Calendar
-                  month={cp().monthLabel}
-                  startDay={cp().firstDay}
-                  days={cp().daysInMonth}
-                  marks={cp().marks}
-                />
+                <For each={months()}>
+                  {(cp) => (
+                    <Calendar
+                      month={cp.monthLabel}
+                      startDay={cp.firstDay}
+                      days={cp.daysInMonth}
+                      marks={cp.marks}
+                    />
+                  )}
+                </For>
                 <div class="flex gap-3 text-[11px] text-ink-soft">
                   <span class="flex items-center gap-1">
                     <span class="w-2.5 h-2.5 rounded-sm bg-accent inline-block" />모두 가능
