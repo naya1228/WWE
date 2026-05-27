@@ -75,9 +75,9 @@ export default function Intro() {
       <div class="py-8 flex flex-col gap-3">
         <button
           onClick={goNew}
-          class="w-full py-4 bg-accent border-2 border-ink rounded-2xl shadow-sketch-md
+          class={`w-full py-4 bg-accent border-2 border-ink rounded-2xl shadow-sketch-md
                  font-kalam font-bold text-[19px] text-center ${isAccentDark() ? 'text-white' : 'text-ink'}
-                 active:translate-y-[1px] active:shadow-none transition-[transform,box-shadow] duration-75 cursor-pointer"
+                 active:translate-y-[1px] active:shadow-none transition-[transform,box-shadow] duration-75 cursor-pointer`}
         >
           시작하기 →
         </button>
