@@ -1,4 +1,5 @@
 import type { JSX } from 'solid-js';
+import { isAccentDark } from '../store';
 
 interface Props {
   children: JSX.Element;
@@ -30,7 +31,8 @@ export default function Button(props: Props) {
     <button
       onClick={props.onClick}
       class={`
-        cursor-pointer text-ink font-kalam font-bold leading-tight text-center
+        cursor-pointer font-kalam font-bold leading-tight text-center
+        ${variant() === 'primary' && isAccentDark() ? 'text-white' : 'text-ink'}
         flex items-center justify-center gap-2
         active:translate-y-[1px] active:shadow-none transition-[transform,box-shadow] duration-75
         ${VARIANT[variant()]}

@@ -131,6 +131,15 @@ export const [accentColor, setAccentColor] = createSignal<string>(
   stored?.color ?? ACCENT_COLORS[0]
 );
 
+/** accent 색이 어두우면 true (글자색 반전 판단용) */
+export function isAccentDark(): boolean {
+  const hex = accentColor().replace('#', '');
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) < 128;
+}
+
 export function accentSoft(): string {
   const hex = accentColor().replace('#', '');
   const r = parseInt(hex.slice(0, 2), 16);
