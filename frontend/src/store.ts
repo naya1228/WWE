@@ -1,8 +1,11 @@
-// 전역 앱 상태
 import { createSignal } from 'solid-js';
 import { ACCENT_COLORS } from './constants';
+import type { RoomOut } from './api';
+
+// ── 화면 타입 ──────────────────────────────────────────────────────────
 
 export type Screen =
+  | 'intro'
   | 'onboard'
   | 'setup'
   | 'landing'
@@ -11,11 +14,72 @@ export type Screen =
   | 'profile'
   | 'profile-edit';
 
-export const [screen, setScreen] = createSignal<Screen>('onboard');
+export const [screen, setScreen] = createSignal<Screen>('intro');
 
-export const [userName, setUserName] = createSignal('');
-export const [userPhone, setUserPhone] = createSignal('');
-export const [accentColor, setAccentColor] = createSignal<string>(ACCENT_COLORS[0]);
+// 재방문 여부 — onboard 이후 setup 건너뛸지 결정
+export const [isReturning, setIsReturning] = createSignal(false);
+
+// ── 유저 상태 ──────────────────────────────────────────────────────────
+
+export interface UserState {
+  id: string;
+  token: string;
+  phone: string;
+  name: string;
+  color: string;
+}
+
+const LS_KEY = 'wwe_user';
+
+function loadFromStorage(): UserState | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveToStorage(u: UserState) {
+  localStorage.setItem(LS_KEY, JSON.stringify(u));
+}
+
+export function clearStorage() {
+  localStorage.removeItem(LS_KEY);
+}
+
+// 앱 시작 시 localStorage 복원
+const stored = loadFromStorage();
+
+export const [user, setUserSignal] = createSignal<UserState | null>(stored);
+
+export function saveUser(u: UserState) {
+  saveToStorage(u);
+  setUserSignal(u);
+  setAccentColor(u.color);
+}
+
+export function clearUser() {
+  clearStorage();
+  setUserSignal(null);
+}
+
+// 편의 getter
+export const userId = () => user()?.id ?? '';
+export const userToken = () => user()?.token ?? '';
+export const userName = () => user()?.name ?? '';
+export const userPhone = () => user()?.phone ?? '';
+
+// ── 룸 상태 ────────────────────────────────────────────────────────────
+
+export const [myRooms, setMyRooms] = createSignal<RoomOut[]>([]);
+export const [currentRoomId, setCurrentRoomId] = createSignal<string>('');
+
+// ── 색상 ───────────────────────────────────────────────────────────────
+
+export const [accentColor, setAccentColor] = createSignal<string>(
+  stored?.color ?? ACCENT_COLORS[0]
+);
 
 export function accentSoft(): string {
   const hex = accentColor().replace('#', '');
@@ -26,25 +90,11 @@ export function accentSoft(): string {
   return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
 }
 
-// 가능한 시간 — 날짜별 시간 set
-export type TimeMap = Record<number, Set<number>>;
-export const [availableTimes, setAvailableTimes] = createSignal<TimeMap>({});
+// ── 앱 초기화 ──────────────────────────────────────────────────────────
 
-export function toggleTime(date: number, hour: number) {
-  setAvailableTimes(prev => {
-    const next = { ...prev };
-    if (!next[date]) next[date] = new Set();
-    else next[date] = new Set(next[date]);
-    if (next[date].has(hour)) next[date].delete(hour);
-    else next[date].add(hour);
-    return next;
-  });
-}
-
-export function myMarks(): Record<number, 'available'> {
-  const result: Record<number, 'available'> = {};
-  for (const [d, times] of Object.entries(availableTimes())) {
-    if ((times as Set<number>).size > 0) result[Number(d)] = 'available';
+/** localStorage 유저 있으면 landing으로 바로 진입 */
+export function initApp() {
+  if (stored) {
+    setScreen('landing');
   }
-  return result;
 }

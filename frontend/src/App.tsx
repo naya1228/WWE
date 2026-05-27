@@ -1,15 +1,17 @@
-import { Switch, Match, createEffect } from 'solid-js';
-import { screen, accentColor, accentSoft } from './store';
-import OnboardA from './screens/OnboardA';
-import SetupA from './screens/SetupA';
-import LandingC from './screens/LandingC';
-import RoomB from './screens/RoomB';
+import { Switch, Match, createEffect, onMount } from 'solid-js';
+import { screen, accentColor, accentSoft, initApp } from './store';
+import Intro from './screens/Intro';
+import Onboard from './screens/Onboard';
+import Setup from './screens/Setup';
+import Landing from './screens/Landing';
+import Room from './screens/Room';
 import RoomEmpty from './screens/RoomEmpty';
-import ProfileB from './screens/ProfileB';
-import EditA from './screens/EditA';
+import Profile from './screens/Profile';
+import Edit from './screens/Edit';
 
 export default function App() {
-  // accent 색상 변경 시 CSS 변수 동기화 → Tailwind 유틸리티(bg-accent 등) 자동 반영
+  onMount(() => initApp());
+
   createEffect(() => {
     document.documentElement.style.setProperty('--color-accent', accentColor());
     document.documentElement.style.setProperty('--color-accent-soft', accentSoft());
@@ -17,13 +19,14 @@ export default function App() {
 
   return (
     <Switch>
-      <Match when={screen() === 'onboard'}><OnboardA /></Match>
-      <Match when={screen() === 'setup'}><SetupA /></Match>
-      <Match when={screen() === 'landing'}><LandingC /></Match>
-      <Match when={screen() === 'room'}><RoomB /></Match>
+      <Match when={screen() === 'intro'}><Intro /></Match>
+      <Match when={screen() === 'onboard'}><Onboard /></Match>
+      <Match when={screen() === 'setup'}><Setup /></Match>
+      <Match when={screen() === 'landing'}><Landing /></Match>
+      <Match when={screen() === 'room'}><Room /></Match>
       <Match when={screen() === 'room-empty'}><RoomEmpty /></Match>
-      <Match when={screen() === 'profile'}><ProfileB /></Match>
-      <Match when={screen() === 'profile-edit'}><EditA /></Match>
+      <Match when={screen() === 'profile'}><Profile /></Match>
+      <Match when={screen() === 'profile-edit'}><Edit /></Match>
     </Switch>
   );
 }

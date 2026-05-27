@@ -1,4 +1,3 @@
-// ⑥ 프로필 편집 — 이름 + 색상
 import { createSignal, For } from 'solid-js';
 import Screen from '../components/Screen';
 import Button from '../components/Button';
@@ -7,7 +6,7 @@ import Avatar from '../components/Avatar';
 import { ACCENT_COLORS } from '../constants';
 import { setScreen, userName, setUserName, accentColor, setAccentColor } from '../store';
 
-export default function EditA() {
+export default function Edit() {
   const [name, setName] = createSignal(userName());
   const [color, setColor] = createSignal(accentColor());
 

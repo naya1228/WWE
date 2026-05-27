@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/WWE.iml" filepath="$PROJECT_DIR$/.idea/WWE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/wwe-backend.iml" filepath="$PROJECT_DIR$/.idea/wwe-backend.iml" />
     </modules>
   </component>
 </project>
